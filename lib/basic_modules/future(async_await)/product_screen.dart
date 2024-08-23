@@ -1,9 +1,11 @@
-import 'dart:ffi';
+// import 'dart:convert';
 
+import 'package:first_project/basic_modules/future(async_await)/favorit_screen.dart';
+import 'package:first_project/basic_modules/future(async_await)/favorite_product_logic.dart';
 import 'package:first_project/basic_modules/future(async_await)/product_logic.dart';
 import 'package:first_project/basic_modules/future(async_await)/product_model.dart';
 import 'package:first_project/basic_modules/future(async_await)/product_service.dart';
-import 'package:flutter/cupertino.dart';
+// import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -30,11 +32,31 @@ class _ProductScreenState extends State<ProductScreen> {
 
   @override
   Widget build(BuildContext context) {
+    int numOfFavorite = context.watch<FavoriteProductLogic>().numOfFavorite;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("Task 1 Screen"),
+        title: Text("SHOPPING"),
         backgroundColor: Colors.blue,
         actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => FavoriteScreen(),
+                ),
+              );
+            },
+            icon: numOfFavorite == 0
+                ? Badge(
+                    isLabelVisible: false,
+                    child: Icon(Icons.favorite, color: Colors.white),
+                  )
+                : Badge(
+                    label: Text("$numOfFavorite"),
+                    child: Icon(Icons.favorite, color: Colors.white),
+                  ),
+          ),
           IconButton(
               onPressed: () {
                 context.read<ProductLogic>().toggleView();
@@ -214,7 +236,15 @@ class _ProductScreenState extends State<ProductScreen> {
           ),
           title: Text(item.title),
           subtitle: Text("USD ${item.price}"),
-          trailing: Text("${item.rating.rate}/5"),
+          trailing: IconButton(
+            onPressed: () {
+              context.read<FavoriteProductLogic>().toggle(item);
+            },
+            icon: context.watch<FavoriteProductLogic>().isFavorite(item)
+                ? Icon(Icons.favorite, color: Colors.red)
+                : Icon(Icons.favorite_border),
+          ),
+          //trailing: Text("${item.rating.rate}/5"),
         ),
       ),
     );
